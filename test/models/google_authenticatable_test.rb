@@ -20,12 +20,12 @@ class GoogleAuthenticatableTest < ActiveSupport::TestCase
 	end
 
 	test 'updating gauth_enabled to true' do
-		User.find(1).set_gauth_enabled(:gauth_enabled => 1)
+		User.find(1).set_gauth_enabled(1)
 		assert_equal 1, User.find(1).gauth_enabled.to_i
 	end
 
 	test 'updating gauth_enabled back to false' do
-		User.find(1).set_gauth_enabled(:gauth_enabled => 0)
+		User.find(1).set_gauth_enabled(0)
 		assert_equal 0, User.find(1).gauth_enabled.to_i
 	end
 
@@ -59,6 +59,14 @@ class GoogleAuthenticatableTest < ActiveSupport::TestCase
 
 		assert !User.find(1).validate_token('1')
 		assert User.find(1).validate_token(ROTP::TOTP.new(User.find(1).get_qr).at(Time.now))
+	end
+
+	test 'requiring token after remembertime' do
+		u = User.find(1)
+		assert u.require_token?(nil)
+		assert u.require_token?(u.email + "," + 2.months.ago.to_i.to_s)
+		assert !u.require_token?(u.email + "," + 1.day.ago.to_i.to_s)
+		assert u.require_token?("testxx@test.com" + "," + 1.day.ago.to_i.to_s)
 	end
 
 end

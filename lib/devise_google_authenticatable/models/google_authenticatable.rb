@@ -18,9 +18,10 @@ module Devise # :nodoc:
         def get_qr
           self.gauth_secret
         end
-        
+
         def set_gauth_enabled(param)
-          self.update_without_password(param)
+          #self.update_without_password(params[gauth_enabled])
+          self.update_attributes(:gauth_enabled => param)
         end
 
         def assign_tmp
@@ -40,13 +41,40 @@ module Devise # :nodoc:
               valid_vals << ROTP::TOTP.new(self.get_qr).at(Time.now.ago(30*cc))
               valid_vals << ROTP::TOTP.new(self.get_qr).at(Time.now.in(30*cc))
             end
-            
+
             if valid_vals.include?(token.to_i)
               return true
             else
               return false
             end
           end
+        end
+
+        def gauth_enabled?
+          # Active_record seems to handle determining the status better this way
+          if self.gauth_enabled.respond_to?("to_i")
+            if self.gauth_enabled.to_i != 0
+              return true
+            else
+              return false
+            end
+          # Mongoid does NOT have a .to_i for the Boolean return value, hence, we can just return it
+          else
+            return self.gauth_enabled
+          end
+        end
+
+        def require_token?(cookie)
+          if self.class.ga_remembertime.nil? || cookie.blank?
+            return true
+          end
+          array = cookie.to_s.split ','
+          if array.count != 2
+            return true
+          end
+          last_logged_in_email = array[0]
+          last_logged_in_time = array[1].to_i
+          return last_logged_in_email != self.email || (Time.now.to_i - last_logged_in_time) > self.class.ga_remembertime.to_i
         end
 
         private
@@ -59,9 +87,9 @@ module Devise # :nodoc:
 
       module ClassMethods # :nodoc:
         def find_by_gauth_tmp(gauth_tmp)
-          find(:first, :conditions => {:gauth_tmp => gauth_tmp})
+          where(gauth_tmp: gauth_tmp).first
         end
-        ::Devise::Models.config(self, :ga_timeout, :ga_timedrift)
+        ::Devise::Models.config(self, :ga_timeout, :ga_timedrift, :ga_remembertime, :ga_appname, :ga_bypass_signup)
       end
     end
   end

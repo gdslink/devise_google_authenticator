@@ -11,6 +11,15 @@ module Devise # :nodoc:
 
 	mattr_accessor :ga_timedrift
 	@@ga_timedrift = 3
+
+	mattr_accessor :ga_remembertime
+	@@ga_remembertime = 1.month
+
+	mattr_accessor :ga_appname
+	@@ga_appname = Rails.application.class.parent_name
+
+	mattr_accessor :ga_bypass_signup
+	@@ga_bypass_signup = false
 end
 
 # a security extension for devise

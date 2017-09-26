@@ -27,7 +27,7 @@ pkg
 #
 # For MacOS:
 #
-#.DS_Store
+.DS_Store
 
 # For TextMate
 #*.tmproj
@@ -51,3 +51,7 @@ pkg
 test/rails_app/log/
 test/rails_app/db/*.sqlite3
 Gemfile.lock
+.ruby-version
+.ruby-gemset
+
+.idea/

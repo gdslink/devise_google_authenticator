@@ -6,6 +6,8 @@ Devise.setup do |config|
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
 
+  config.secret_key = '4ae92aa404e426dcfbf44b65a8e7a876f26b4598c6b87e522147241960ce3c9f84be2707d34350e9de48e5418d116b0063020af96c6b1d4e0c826845666912fb'
+
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
 
@@ -191,7 +193,7 @@ Devise.setup do |config|
   # config.navigational_formats = [:"*/*", "*/*", :html]
 
   # The default HTTP method used to sign out a resource. Default is :delete.
-  config.sign_out_via = :delete
+  config.sign_out_via = :get
 
   # ==> OmniAuth
   # Add a new OmniAuth provider. Check the wiki for more information on setting
@@ -215,6 +217,10 @@ Devise.setup do |config|
 
   # Change time drift settings for valid token values. To change the default, uncomment and change the below:
   # config.ga_timedrift = 3
+
+  # Change setting to how long to remember device before requiring another token. Change to nil to turn feature off.
+  # To change the default, uncomment and change the below:
+  # config.ga_remembertime = 1.month
 
 
 end
