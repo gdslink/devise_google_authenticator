@@ -17,7 +17,7 @@ module DeviseGoogleAuthenticator::Patches
 
         resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#new")
 
-        if resource.respond_to?(:get_qr) and ActiveRecord::ConnectionAdapters::Column.value_to_boolean(resource.gauth_enabled) and resource.require_token?(cookies.signed[:gauth]) #Therefore we can quiz for a QR
+        if resource.respond_to?(:get_qr) and ActiveRecord::Type::Boolean.new.type_cast_from_database(resource.gauth_enabled) and resource.require_token?(cookies.signed[:gauth]) #Therefore we can quiz for a QR
           tmpid = resource.assign_tmp #assign a temporary key and fetch it
           warden.logout #log the user out
 
@@ -25,7 +25,7 @@ module DeviseGoogleAuthenticator::Patches
           #Because the model used for google auth may not always be the same, and may be a sub-model, the eval will evaluate the appropriate path name
           #This change addresses https://github.com/AsteriskLabs/devise_google_authenticator/issues/7
           respond_with resource, :location => { :controller => 'devise/checkga', :action => 'show', :id => tmpid}
-        elsif resource.respond_to?(:get_qr) and !ActiveRecord::ConnectionAdapters::Column.value_to_boolean(resource.gauth_enabled) and resource.gauth_secret
+        elsif resource.respond_to?(:get_qr) and !ActiveRecord::Type::Boolean.new.type_cast_from_database(resource.gauth_enabled) and resource.gauth_secret
           respond_with resource, :location => { :controller => 'devise/displayqr', :action => 'show'}
         else #It's not using, or not enabled for Google 2FA, OR is remembering token and therefore not asking for the moment - carry on, nothing to see here.
           set_flash_message(:notice, :signed_in) if is_flashing_format?
