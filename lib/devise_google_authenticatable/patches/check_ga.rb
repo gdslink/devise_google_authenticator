@@ -34,6 +34,7 @@ module DeviseGoogleAuthenticator::Patches
         end
 
       end
+      
     end
   end
 end

@@ -15,12 +15,12 @@ module DeviseGoogleAuthenticator::Patches
           if resource.active_for_authentication?
             set_flash_message :notice, :signed_up if is_flashing_format?
             sign_in(resource_name, resource)
-
+            
             if resource.respond_to? :gauth_enabled?
               if resource.class.ga_bypass_signup
                 respond_with resource, location: after_sign_up_path_for(resource)
               else
-                respond_with resource, :location => {:controller => 'devise/displayqr', :action => 'show'}
+                respond_with resource, :location => {:controller => 'displayqr', :action => 'show'}
               end
             else
               respond_with resource, location: after_sign_up_path_for(resource)
