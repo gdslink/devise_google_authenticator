@@ -16,6 +16,7 @@ class Devise::DisplayqrController < DeviseController
 
   def update
     if resource.gauth_tmp != params[resource_name]['tmpid'] || !resource.validate_token(params[resource_name]['gauth_token'].to_i)
+      @tmpid = resource.assign_tmp unless resource.gauth_tmp != params[resource_name]['tmpid']
       set_flash_message(:error, :invalid_token)
       render :show
       return

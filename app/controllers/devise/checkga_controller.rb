@@ -32,12 +32,12 @@ class Devise::CheckgaController < Devise::SessionsController
           }
         end
       else
-        set_flash_message(:error, :error)
+        set_flash_message(:error, :invalid_token)
         redirect_to :root
       end
 
     else
-      set_flash_message(:error, :error)
+      set_flash_message(:error, :invalid_token)
       redirect_to :root
     end
   end
