@@ -15,20 +15,27 @@ class Devise::DisplayqrController < DeviseController
   end
 
   def update
-    if resource.gauth_tmp != params[resource_name]['tmpid'] || !resource.validate_token(params[resource_name]['gauth_token'].to_i)
-      @tmpid = resource.assign_tmp unless resource.gauth_tmp != params[resource_name]['tmpid']
-      set_flash_message(:error, :invalid_token)
-      render :show
-      return
-    end
-
-    if resource.set_gauth_enabled(params[resource_name]['gauth_enabled'])
-      set_flash_message :notice, (resource.gauth_enabled? ? :enabled : :disabled)
-      sign_in scope, resource, :bypass => true
+    # resource.gauth_enabled = true
+    # resource.save!
+    if !resource
       redirect_to stored_location_for(scope) || :root
     else
-      render :show
+      if resource.gauth_tmp != params[resource_name]['tmpid'] || !resource.validate_token(params[resource_name]['gauth_token'].to_i)
+        @tmpid = resource.assign_tmp unless resource.gauth_tmp != params[resource_name]['tmpid']
+        set_flash_message(:error, :invalid_token)
+        render :show
+        return
+      end
+
+      if resource.set_gauth_enabled(params[resource_name]['gauth_enabled'])
+        set_flash_message :notice, (resource.gauth_enabled? ? :enabled : :disabled)
+        sign_in scope, resource, :bypass => true
+        redirect_to stored_location_for(scope) || :root
+      else
+        render :show
+      end
     end
+
   end
 
   def refresh
@@ -44,6 +51,7 @@ class Devise::DisplayqrController < DeviseController
   end
 
   private
+
   def scope
     resource_name.to_sym
   end
